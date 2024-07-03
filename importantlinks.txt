@@ -1,0 +1,6 @@
+https://github.com/openai/openai-python/discussions/742
+
+OpenAPI API Key
+==================
+
+sk-proj-knhjFYo4MTf7oxUrtfKMT3BlbkFJWwrnaIAp9LcBVrPPPJuL 
