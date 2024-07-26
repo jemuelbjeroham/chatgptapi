@@ -1,0 +1,43 @@
+---
+- name: Read precheck file
+  slurp:
+    src: /path/to/precheck_file.txt
+  register: precheck_content
+
+- name: Read postcheck file
+  slurp:
+    src: /path/to/postcheck_file.txt
+  register: postcheck_content
+
+- name: Decode precheck content
+  set_fact:
+    precheck: "{{ precheck_content.content | b64decode }}"
+
+- name: Decode postcheck content
+  set_fact:
+    postcheck: "{{ postcheck_content.content | b64decode }}"
+
+- name: Create a temporary file to store the differences
+  tempfile:
+    state: file
+    suffix: diff.txt
+  register: diff_file
+
+- name: Calculate differences
+  command: diff /path/to/precheck_file.txt /path/to/postcheck_file.txt
+  register: diff_output
+  failed_when: diff_output.rc > 1
+  changed_when: diff_output.rc == 1
+
+- name: Write differences to file
+  copy:
+    content: "{{ diff_output.stdout }}"
+    dest: "{{ diff_file.path }}"
+
+- name: Record the location of the differences file
+  set_fact:
+    diff_file_path: "{{ diff_file.path }}"
+
+- name: Print the location of the differences file
+  debug:
+    msg: "Differences recorded in {{ diff_file_path }}"
